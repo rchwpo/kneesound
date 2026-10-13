@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="KneeSound is a knee brace in development for earlier, radiation-free screening of knee osteoarthritis in Singapore.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 34 20%27%3E%3Cpath d=%27M1 10h6l2-6 3 12 3-9 2 5 2-2h4l2-5 2 9 2-4h4%27 fill=%27none%27 stroke=%27%232147C9%27 stroke-width=%272.2%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<title>KneeSound</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Layout: left-aligned single column on chart-recorder paper; the hero is a live three-channel recording strip. */
+:root {
+  --paper: #EDF1F0;
+  --surface: #F8FAF9;
+  --ink: #13233A;
+  --muted: #55636F;
+  --grid: #D2DBD9;
+  --grid-strong: #B9C6C3;
+  --cobalt: #2147C9;
+  --cobalt-ink: #FFFFFF;
+  --teal: #0C7A6B;
+  --amber: #C8711B;
+  --amber-soft: #F6E2CC;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 4.2vw, 2.9rem);
+  --step-4: clamp(2.5rem, 6.4vw, 4.6rem);
+  --gutter: clamp(16px, 4vw, 40px);
+  --max: 1120px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0E1721;
+    --surface: #15212E;
+    --ink: #E3EBE9;
+    --muted: #97A6B1;
+    --grid: #1F2E3D;
+    --grid-strong: #2C3F52;
+    --cobalt: #7FA2FF;
+    --cobalt-ink: #0B1420;
+    --teal: #45C6B1;
+    --amber: #F0A453;
+    --amber-soft: #3A2A17;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0E1721;
+  --surface: #15212E;
+  --ink: #E3EBE9;
+  --muted: #97A6B1;
+  --grid: #1F2E3D;
+  --grid-strong: #2C3F52;
+  --cobalt: #7FA2FF;
+  --cobalt-ink: #0B1420;
+  --teal: #45C6B1;
+  --amber: #F0A453;
+  --amber-soft: #3A2A17;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--cobalt); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.08; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+
+.wrap { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+
+/* Header */
+.site-head {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--grid);
+}
+.site-head .wrap { display: flex; align-items: center; gap: 24px; padding-block: 14px; }
+.wordmark { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
+.wordmark svg { width: 34px; height: 20px; flex: none; }
+.nav { display: flex; gap: 22px; margin-left: auto; font-size: var(--step--1); }
+.nav a { color: var(--muted); text-decoration: none; }
+.nav a:hover { color: var(--ink); }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font: 700 var(--step--1)/1 var(--font-body);
+  padding: 13px 18px; border-radius: 999px; border: 1.5px solid var(--cobalt);
+  background: var(--cobalt); color: var(--cobalt-ink); text-decoration: none; cursor: pointer;
+  transition: transform .15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn.ghost { background: transparent; color: var(--cobalt); }
+.site-head .btn { padding: 10px 14px; }
+@media (max-width: 820px) { .nav { display: none; } .site-head .btn { margin-left: auto; } }
+
+/* Hero */
+.hero { padding-block: clamp(40px, 7vw, 88px) 32px; }
+.status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 500 0.78rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--amber); background: var(--amber-soft); padding: 7px 11px; border-radius: 999px;
+}
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+.hero h1 { font-size: var(--step-4); font-weight: 800; margin-top: 22px; max-width: 14ch; }
+.hero h1 em { font-style: normal; color: var(--cobalt); }
+.hero .lede { font-size: var(--step-1); line-height: 1.5; color: var(--muted); max-width: 46ch; margin-top: 22px; }
+.hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+/* Recording strip */
+.strip {
+  margin-top: clamp(36px, 5vw, 56px);
+  background: var(--surface);
+  border: 1px solid var(--grid-strong);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.strip-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+  padding: 14px 18px; border-bottom: 1px solid var(--grid);
+  font: 400 0.8rem/1.3 var(--font-mono); color: var(--muted);
+}
+.strip-bar strong { color: var(--ink); font-weight: 500; }
+.strip-bar .rec { display: inline-flex; align-items: center; gap: 8px; }
+.strip-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--grid-strong); }
+.strip.playing .strip-bar .dot { background: var(--amber); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .strip.playing .strip-bar .dot { animation: none; } }
+.play {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 500 0.8rem/1 var(--font-mono); color: var(--ink);
+  background: transparent; border: 1px solid var(--grid-strong); border-radius: 999px;
+  padding: 9px 14px; cursor: pointer;
+}
+.play:hover { border-color: var(--ink); }
+.play svg { width: 12px; height: 12px; fill: currentColor; }
+.canvas-box { position: relative; height: clamp(250px, 32vw, 330px); }
+.canvas-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.legend {
+  display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 12px 18px 16px;
+  border-top: 1px solid var(--grid); font-size: var(--step--1); color: var(--muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; }
+.legend .tri { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--amber); border-radius: 0; }
+.legend .note { margin-left: auto; font-style: italic; }
+@media (max-width: 640px) { .legend .note { margin-left: 0; } }
+
+/* Sections */
+section.block { padding-block: clamp(56px, 8vw, 104px); border-top: 1px solid var(--grid); }
+.eyebrow { font: 500 0.78rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.block h2 { font-size: var(--step-3); font-weight: 700; margin-top: 14px; max-width: 22ch; }
+.block .intro { color: var(--muted); max-width: 62ch; margin-top: 18px; }
+
+/* Comparison */
+.table-scroll { overflow-x: auto; margin-top: 36px; }
+table.compare { width: 100%; min-width: 620px; border-collapse: collapse; font-size: var(--step--1); }
+.compare th, .compare td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+.compare thead th { font: 500 0.78rem/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1.5px solid var(--grid-strong); }
+.compare tbody th { font-weight: 700; color: var(--ink); width: 26%; }
+.compare td:last-child { color: var(--ink); background: color-mix(in srgb, var(--cobalt) 6%, transparent); }
+.compare td:nth-child(2) { color: var(--muted); }
+.fine { font-size: var(--step--1); color: var(--muted); margin-top: 16px; max-width: 70ch; }
+
+/* Pillars */
+.pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 32px); margin-top: 40px; }
+@media (max-width: 760px) { .pillars { grid-template-columns: minmax(0, 1fr); } }
+.pillars article { border-top: 2px solid var(--ink); padding-top: 18px; }
+.pillars article:nth-child(1) { border-color: var(--cobalt); }
+.pillars article:nth-child(2) { border-color: var(--teal); }
+.pillars h3 { font-size: var(--step-1); font-weight: 700; }
+.pillars p { margin-top: 8px; color: var(--muted); max-width: 34ch; }
+.together { margin-top: 36px; font-family: var(--font-display); font-size: var(--step-1); font-weight: 500; line-height: 1.35; max-width: 40ch; }
+
+/* Test steps */
+.steps { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: step; }
+@media (max-width: 900px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; } }
+@media (max-width: 520px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.steps li { counter-increment: step; padding: 22px 22px 0 0; border-top: 2px solid var(--ink); position: relative; }
+.steps li::before { content: counter(step); font: 800 2.4rem/1 var(--font-display); color: var(--cobalt); display: block; margin-bottom: 14px; }
+.steps h3 { font-size: var(--step-1); font-weight: 700; }
+.steps p { color: var(--muted); margin-top: 8px; font-size: var(--step--1); max-width: 30ch; }
+.steps .time { display: inline-block; margin-top: 12px; font: 500 0.78rem/1 var(--font-mono); color: var(--ink); background: var(--surface); border: 1px solid var(--grid-strong); padding: 6px 8px; border-radius: 6px; }
+.total { margin-top: 36px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; }
+.total b { font: 800 var(--step-2)/1 var(--font-display); }
+.total span { color: var(--muted); }
+
+/* Audiences */
+.audiences { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(20px, 3vw, 32px); margin-top: 40px; }
+@media (max-width: 720px) { .audiences { grid-template-columns: minmax(0, 1fr); } }
+.aud { background: var(--surface); border: 1px solid var(--grid-strong); border-radius: 14px; padding: clamp(22px, 3vw, 32px); }
+.aud .eyebrow { color: var(--cobalt); }
+.aud h3 { font-size: var(--step-2); font-weight: 700; margin-top: 12px; }
+.aud p { margin-top: 12px; color: var(--muted); }
+.aud ul { margin: 16px 0 0; padding-left: 1.1em; display: grid; gap: 6px; }
+
+/* Progress */
+.timeline { list-style: none; padding: 0; margin: 40px 0 0; display: grid; gap: 0; max-width: 820px; }
+.timeline li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 22px; padding-block: 20px; border-bottom: 1px solid var(--grid); }
+@media (max-width: 520px) { .timeline li { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
+.chip { align-self: start; justify-self: start; font: 500 0.75rem/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 9px; border-radius: 999px; border: 1px solid currentColor; }
+.chip.done { color: var(--teal); }
+.chip.now { color: var(--amber); background: var(--amber-soft); border-color: transparent; }
+.chip.later { color: var(--muted); }
+.timeline h3 { font-family: var(--font-body); font-size: var(--step-0); font-weight: 700; letter-spacing: 0; }
+.timeline p { color: var(--muted); margin-top: 4px; font-size: var(--step--1); max-width: 62ch; }
+.timeline .when { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+
+/* Partner */
+.partner { background: var(--ink); color: var(--paper); border-radius: 18px; padding: clamp(28px, 5vw, 64px); display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(28px, 5vw, 64px); }
+@media (max-width: 820px) { .partner { grid-template-columns: minmax(0, 1fr); } }
+.partner .eyebrow { color: color-mix(in srgb, var(--paper) 65%, transparent); }
+.partner h2 { color: var(--paper); }
+.partner .intro { color: color-mix(in srgb, var(--paper) 75%, transparent); }
+.asks { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; align-content: start; }
+.asks li { border-top: 1px solid color-mix(in srgb, var(--paper) 25%, transparent); padding-top: 16px; }
+.asks b { display: block; font-family: var(--font-display); font-size: var(--step-1); font-weight: 700; }
+.asks span { display: block; margin-top: 4px; color: color-mix(in srgb, var(--paper) 72%, transparent); font-size: var(--step--1); }
+.contact { margin-top: 30px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.contact code { font: 500 1rem/1 var(--font-mono); background: color-mix(in srgb, var(--paper) 12%, transparent); color: var(--paper); padding: 12px 14px; border-radius: 8px; user-select: all; }
+.contact button { font: 700 var(--step--1)/1 var(--font-body); padding: 12px 16px; border-radius: 999px; border: 1.5px solid var(--paper); background: var(--paper); color: var(--ink); cursor: pointer; }
+.contact .msg { font-size: var(--step--1); color: color-mix(in srgb, var(--paper) 72%, transparent); min-height: 1.4em; }
+
+/* Footer */
+footer { padding-block: 48px 64px; border-top: 1px solid var(--grid); margin-top: clamp(56px, 8vw, 104px); }
+footer .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px 40px; font-size: var(--step--1); color: var(--muted); }
+@media (max-width: 720px) { footer .wrap { grid-template-columns: minmax(0, 1fr); } }
+footer p + p { margin-top: 8px; }
+footer .org { font-family: var(--font-mono); font-size: 0.78rem; text-align: right; line-height: 1.7; }
+@media (max-width: 720px) { footer .org { text-align: left; } }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="#top" aria-label="KneeSound home">
+      <svg viewBox="0 0 34 20" aria-hidden="true"><path d="M1 10h6l2-6 3 12 3-9 2 5 2-2h4l2-5 2 9 2-4h4" fill="none" stroke="var(--cobalt)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      KneeSound
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#gap">Why</a>
+      <a href="#signals">How it works</a>
+      <a href="#test">The test</a>
+      <a href="#who">Who it's for</a>
+      <a href="#progress">Progress</a>
+    </nav>
+    <a class="btn" href="#partner">Partner with us</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <span class="status">Research prototype · v0.2 knee brace</span>
+    <h1>Listen to the knee <em>while it works.</em></h1>
+    <p class="lede">KneeSound is a knee brace that listens to the joint and tracks how it moves during a five-minute sit-to-stand test. We are building it to help clinicians in Singapore catch knee osteoarthritis earlier and track it over time, with no radiation.</p>
+    <div class="ctas">
+      <a class="btn" href="#partner">Host a pilot</a>
+      <a class="btn ghost" href="#signals">See how it works</a>
+    </div>
+
+    <figure class="strip" id="strip" style="margin-inline:0">
+      <div class="strip-bar">
+        <span class="rec"><span class="dot"></span><strong>5× sit-to-stand</strong></span>
+        <span>3 channels</span>
+        <span>15.0 s</span>
+        <button class="play" id="play" type="button" aria-pressed="false">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path id="playIcon" d="M2 1l9 5-9 5z"/></svg>
+          <span id="playLabel">Hear the joint sound</span>
+        </button>
+      </div>
+      <div class="canvas-box" id="canvasBox">
+        <canvas id="trace" role="img" aria-label="Recording of five sit-to-stand repetitions. Knee angle swings between about 95 degrees seated and 5 degrees standing. Joint sound rises whenever the knee moves, with crepitus spikes during each rise and descent. The load response rises while weight is on the leg."></canvas>
+      </div>
+      <figcaption class="legend">
+        <span><i style="background:var(--ink)"></i>Knee angle</span>
+        <span><i style="background:var(--cobalt)"></i>Joint sound</span>
+        <span><i style="background:var(--teal)"></i>Load response</span>
+        <span><i class="tri"></i>Crepitus event</span>
+        <span class="note">Synthetic illustration, not patient data.</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <section class="block" id="gap">
+    <div class="wrap">
+      <p class="eyebrow">Why</p>
+      <h2>An X-ray shows bone standing still.</h2>
+      <p class="intro">Knee osteoarthritis is usually confirmed on an X-ray, an image of bone at a single moment. By the time the joint space has visibly narrowed, cartilage damage is well established. Physiotherapy, load management and weight change work best before that point, and today there is no quick, objective way to check a knee earlier.</p>
+
+      <div class="table-scroll">
+        <table class="compare">
+          <thead>
+            <tr><th scope="col"></th><th scope="col">Standing X-ray</th><th scope="col">KneeSound</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">What it measures</th><td>Bone shape and joint space, at rest</td><td>How the joint sounds and moves under load</td></tr>
+            <tr><th scope="row">Radiation</th><td>Yes</td><td>None</td></tr>
+            <tr><th scope="row">How often you can repeat it</th><td>Limited by dose</td><td>As often as is clinically useful</td></tr>
+            <tr><th scope="row">Where it happens</th><td>Imaging centre, after referral</td><td>Physio clinic, polyclinic or active ageing centre</td></tr>
+            <tr><th scope="row">Time in the room</th><td>An appointment, plus the referral chain</td><td>About 5–7 minutes</td></tr>
+            <tr><th scope="row">What prompts it</th><td>Usually knee pain</td><td>Anyone at risk, before symptoms start</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine">KneeSound is designed to work alongside imaging. Its accuracy against an accepted reference standard has not yet been tested; that is the next stage of our work.</p>
+    </div>
+  </section>
+
+  <section class="block" id="signals">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2>One brace, a few minutes, a fuller picture of the knee.</h2>
+      <p class="intro">The brace records the knee through a standard movement test and turns what it picks up into a single score a clinician can read and compare over time.</p>
+
+      <div class="pillars">
+        <article>
+          <h3>Joint sound</h3>
+          <p>Worn cartilage changes the sound a knee makes as it bends. The brace listens for it.</p>
+        </article>
+        <article>
+          <h3>Load response</h3>
+          <p>How the joint behaves as body weight goes through it during each stand.</p>
+        </article>
+        <article>
+          <h3>Movement</h3>
+          <p>How a person rises, sits and shifts weight to protect a sore knee.</p>
+        </article>
+      </div>
+      <p class="together">These signals are combined into one knee health score, tracked against the person's own baseline.</p>
+    </div>
+  </section>
+
+  <section class="block" id="test">
+    <div class="wrap">
+      <p class="eyebrow">The test</p>
+      <h2>Five sit-to-stands from an ordinary chair.</h2>
+      <p class="intro">A trained operator runs the session. The person being tested only needs to stand up and sit down at their own pace.</p>
+      <ol class="steps">
+        <li>
+          <h3>Fit the brace</h3>
+          <p>The operator straps the brace over the knee. It takes about a minute.</p>
+          <span class="time">~1 min</span>
+        </li>
+        <li>
+          <h3>Answer a few questions</h3>
+          <p>Height, weight, and a short questionnaire about knee pain and past injury.</p>
+          <span class="time">~2 min</span>
+        </li>
+        <li>
+          <h3>Stand up five times</h3>
+          <p>The brace records through each rise and descent.</p>
+          <span class="time">~1 min</span>
+        </li>
+        <li>
+          <h3>Read the result</h3>
+          <p>A knee health score, plus the change since the person's own baseline on repeat visits.</p>
+          <span class="time">~1–2 min</span>
+        </li>
+      </ol>
+      <div class="total"><b>5–7 minutes</b><span>per person, start to finish. No imaging, no referral.</span></div>
+    </div>
+  </section>
+
+  <section class="block" id="who">
+    <div class="wrap">
+      <p class="eyebrow">Who it's for</p>
+      <h2>Built for the places older knees already visit.</h2>
+      <div class="audiences">
+        <article class="aud">
+          <p class="eyebrow">Screening</p>
+          <h3>Adults aged 60 and over</h3>
+          <p>A quick check for people at risk of knee osteoarthritis, run where they already go. A score above threshold prompts referral to a clinician.</p>
+          <ul>
+            <li>Active ageing centres</li>
+            <li>Polyclinics and GP clinics</li>
+            <li>Community pharmacies</li>
+          </ul>
+        </article>
+        <article class="aud">
+          <p class="eyebrow">Monitoring</p>
+          <h3>Physiotherapists</h3>
+          <p>An objective number to track a patient from visit to visit. Today that judgement rests on goniometry, palpation and what the patient reports.</p>
+          <ul>
+            <li>Baseline at the first session</li>
+            <li>Trend through a treatment plan</li>
+            <li>Evidence to show patients their progress</li>
+          </ul>
+        </article>
+      </div>
+      <p class="fine">KneeSound is intended as a screening and monitoring aid. It supports triage and does not diagnose or treat on its own.</p>
+    </div>
+  </section>
+
+  <section class="block" id="progress">
+    <div class="wrap">
+      <p class="eyebrow">Progress</p>
+      <h2>Where we are, and what comes next.</h2>
+      <p class="intro">We would rather show you the gaps than hide them. Here is what is done and what still has to be proven.</p>
+      <ol class="timeline">
+        <li>
+          <span class="chip done">Done</span>
+          <div>
+            <h3>Wearable knee brace, v0.2</h3>
+            <p>Redesigned from a camera-based station into a wearable knee brace.</p>
+            <p class="when">July 2026</p>
+          </div>
+        </li>
+        <li>
+          <span class="chip done">Done</span>
+          <div>
+            <h3>Early bench recordings</h3>
+            <p>First recordings on three people. Enough to shape the hardware, nowhere near enough to claim accuracy.</p>
+          </div>
+        </li>
+        <li>
+          <span class="chip done">Done</span>
+          <div>
+            <h3>Design checked against the literature</h3>
+            <p>Brace design reviewed against published studies before detailed CAD work.</p>
+            <p class="when">October 2026</p>
+          </div>
+        </li>
+        <li>
+          <span class="chip now">Next</span>
+          <div>
+            <h3>User testing with 30–40 older adults</h3>
+            <p>Includes people with existing knee OA or knee pain. Excludes anyone with a knee replacement. Two afternoon sessions at an active ageing centre.</p>
+          </div>
+        </li>
+        <li>
+          <span class="chip later">Later</span>
+          <div>
+            <h3>Validation against a clinical reference standard</h3>
+            <p>Comparing the KneeSound score with X-ray grade (Kellgren–Lawrence) or MRI, and learning to tell OA crepitus apart from the harmless crepitus many healthy knees make.</p>
+          </div>
+        </li>
+        <li>
+          <span class="chip later">Later</span>
+          <div>
+            <h3>Regulatory pathway</h3>
+            <p>Intended registration with Singapore's HSA as a Class B screening aid, with the scoring algorithm assessed as Software as a Medical Device.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="partner" style="border-top:0; padding-top:0">
+    <div class="wrap">
+      <div class="partner">
+        <div>
+          <p class="eyebrow">Partner with us</p>
+          <h2>Help us prove it on real knees.</h2>
+          <p class="intro">Access to people and labelled data is the slowest part of this work. If you run a clinic, a physiotherapy practice or an active ageing centre in Singapore, we would like to talk.</p>
+          <div class="contact">
+            <code id="email">e1406480@u.nus.edu</code>
+            <button type="button" id="copy">Copy email</button>
+            <span class="msg" id="copyMsg" aria-live="polite"></span>
+          </div>
+        </div>
+        <ul class="asks">
+          <li><b>Clinical advisors</b><span>Guidance on the reference standard, study design and how to word a screening claim.</span></li>
+          <li><b>A pilot site</b><span>A clinic or active ageing centre willing to host testing and shape how the session fits the workflow.</span></li>
+          <li><b>Imaging-labelled data</b><span>Access to KL-graded or MRI-confirmed knees to validate the score against.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p>KneeSound is a research prototype. It is not approved for clinical use and does not diagnose or treat any condition.</p>
+      <p>The recording at the top of this page is a synthetic illustration generated in your browser. It is not patient data.</p>
+    </div>
+    <div class="org">Team 10 · National University of Singapore<br>MedTech Design Sprintathon 2026</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // ---------- Synthetic five-rep sit-to-stand recording ----------
+  var T = 15, CYC = 3, RATE = 400, N = T * RATE;
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var rand = mulberry32(7);
+  function gauss() { return (rand() + rand() + rand() + rand() - 2) / 0.82; }
+  function ease(x) { return 0.5 - 0.5 * Math.cos(Math.PI * x); }
+  // Phases per rep: rise 0–.35, stand .35–.5, descend .5–.85, sit .85–1
+  function angleAt(t) {
+    var p = (t % CYC) / CYC;
+    if (p < 0.35) return 95 - 90 * ease(p / 0.35);
+    if (p < 0.5) return 5;
+    if (p < 0.85) return 5 + 90 * ease((p - 0.5) / 0.35);
+    return 95;
+  }
+  var ang = new Float32Array(N), env = new Float32Array(N), snd = new Float32Array(N), ldr = new Float32Array(N);
+  var maxV = 0, i;
+  for (i = 0; i < N; i++) ang[i] = angleAt(i / RATE);
+  for (i = 0; i < N; i++) {
+    var v = Math.abs(ang[Math.min(N - 1, i + 1)] - ang[Math.max(0, i - 1)]);
+    env[i] = v; if (v > maxV) maxV = v;
+  }
+  for (i = 0; i < N; i++) env[i] = 0.06 + 0.5 * (env[i] / maxV);
+  for (i = 0; i < N; i++) snd[i] = env[i] * gauss() * 0.55;
+
+  // Crepitus events: two on each rise, two on each descent
+  var events = [];
+  for (var r = 0; r < 5; r++) {
+    [0.11, 0.24, 0.61, 0.73].forEach(function (p) {
+      events.push({ t: r * CYC + (p + (rand() - 0.5) * 0.05) * CYC, a: 0.65 + rand() * 0.35 });
+    });
+  }
+  events.forEach(function (e) {
+    var s = Math.round(e.t * RATE);
+    for (var k = 0; k < 14 && s + k < N; k++) {
+      snd[s + k] += e.a * Math.exp(-k / 3) * (k % 2 ? -1 : 1) * (0.8 + rand() * 0.4);
+    }
+  });
+
+  // Load response: rises with load (knee extension, weight through the leg), lagged and slightly noisy
+  var lf = 0, nf = 0;
+  for (i = 0; i < N; i++) {
+    var load = (95 - ang[i]) / 90;
+    lf += (load - lf) * 0.012;
+    nf += (gauss() - nf) * 0.08;
+    ldr[i] = 0.12 + 0.72 * lf + 0.035 * nf;
+  }
+
+  // ---------- Drawing ----------
+  var canvas = document.getElementById('trace');
+  var box = document.getElementById('canvasBox');
+  var ctx = canvas.getContext('2d');
+  var colors = {};
+  var playhead = -1;
+
+  function readColors() {
+    var cs = getComputedStyle(document.documentElement);
+    ['ink', 'muted', 'grid', 'grid-strong', 'cobalt', 'teal', 'amber', 'surface'].forEach(function (k) { colors[k] = cs.getPropertyValue('--' + k).trim(); });
+    colors.mono = cs.getPropertyValue('--font-mono').trim();
+  }
+
+  function draw() {
+    var w = box.clientWidth, h = box.clientHeight, dpr = window.devicePixelRatio || 1;
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    var narrow = w < 560;
+    var L = narrow ? 50 : 76, R = 14, TOP = 30, BOT = 28;
+    var pw = w - L - R, ph = h - TOP - BOT;
+    var gap = 10;
+    var lanes = [
+      { key: 'mov', label: 'ANGLE', unit: 'knee °', frac: 0.27, color: colors.ink },
+      { key: 'snd', label: 'SOUND', unit: 'a.u.', frac: 0.43, color: colors.cobalt },
+      { key: 'ldr', label: 'LOAD', unit: 'a.u.', frac: 0.30, color: colors.teal }
+    ];
+    var y = TOP, avail = ph - gap * 2;
+    lanes.forEach(function (ln) { ln.y = y; ln.h = avail * ln.frac; y += ln.h + gap; });
+    function X(t) { return L + (t / T) * pw; }
+
+    // Grid
+    ctx.lineWidth = 1;
+    for (var s = 0; s <= T * 2; s++) {
+      var gx = Math.round(X(s / 2)) + 0.5;
+      ctx.strokeStyle = s % 2 === 0 ? colors['grid-strong'] : colors.grid;
+      ctx.globalAlpha = s % 6 === 0 ? 1 : 0.7;
+      ctx.beginPath(); ctx.moveTo(gx, TOP - 6); ctx.lineTo(gx, TOP + ph); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    lanes.forEach(function (ln) {
+      ctx.strokeStyle = colors.grid;
+      for (var q = 0; q <= 4; q++) {
+        var gy = Math.round(ln.y + (ln.h * q) / 4) + 0.5;
+        ctx.beginPath(); ctx.moveTo(L, gy); ctx.lineTo(L + pw, gy); ctx.stroke();
+      }
+    });
+
+    // Rep labels and boundaries
+    ctx.font = '500 11px ' + colors.mono;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    for (var r = 0; r < 5; r++) {
+      ctx.fillStyle = colors.muted;
+      ctx.fillText(narrow ? String(r + 1) : 'REP ' + (r + 1), X(r * CYC + CYC / 2), 16);
+      if (r > 0) {
+        ctx.strokeStyle = colors['grid-strong']; ctx.setLineDash([3, 3]);
+        var bx = Math.round(X(r * CYC)) + 0.5;
+        ctx.beginPath(); ctx.moveTo(bx, 6); ctx.lineTo(bx, TOP + ph); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    // Time axis
+    ctx.fillStyle = colors.muted; ctx.textBaseline = 'top';
+    for (var tt = 0; tt <= T; tt += 3) ctx.fillText(tt + ' s', Math.min(Math.max(X(tt), L + 12), L + pw - 12), TOP + ph + 9);
+
+    // Lane labels
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    lanes.forEach(function (ln) {
+      ctx.fillStyle = ln.color; ctx.font = '500 12px ' + colors.mono;
+      ctx.fillText(ln.label, L - 10, ln.y + ln.h / 2 - (narrow ? 0 : 7));
+      if (!narrow) { ctx.fillStyle = colors.muted; ctx.font = '400 10px ' + colors.mono; ctx.fillText(ln.unit, L - 10, ln.y + ln.h / 2 + 8); }
+    });
+
+    // Knee angle (0° at top edge reads as standing; 95° seated at the bottom)
+    var mov = lanes[0];
+    function yAng(a) { return mov.y + 4 + (a / 100) * (mov.h - 8); }
+    ctx.fillStyle = colors.muted; ctx.font = '400 10px ' + colors.mono; ctx.textAlign = 'left';
+    if (!narrow) { ctx.fillText('0°', L + 4, yAng(0) + 2); ctx.fillText('90°', L + 4, yAng(90) - 2); }
+    ctx.strokeStyle = mov.color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (var px = 0; px <= pw; px++) {
+      var idx = Math.min(N - 1, Math.floor((px / pw) * N));
+      var yy = yAng(ang[idx]);
+      px ? ctx.lineTo(L + px, yy) : ctx.moveTo(L + px, yy);
+    }
+    ctx.stroke();
+
+    // Joint sound as min/max envelope per pixel column
+    var vl = lanes[1], vmid = vl.y + vl.h / 2, vs = vl.h / 2 / 1.25;
+    ctx.strokeStyle = vl.color; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (px = 0; px < pw; px++) {
+      var a0 = Math.floor((px / pw) * N), a1 = Math.max(a0 + 1, Math.floor(((px + 1) / pw) * N));
+      var mn = 0, mx = 0;
+      for (var k = a0; k < a1 && k < N; k++) { if (snd[k] < mn) mn = snd[k]; if (snd[k] > mx) mx = snd[k]; }
+      var cx = L + px + 0.5;
+      ctx.moveTo(cx, vmid - Math.min(mx, 1.25) * vs); ctx.lineTo(cx, vmid - Math.max(mn, -1.25) * vs);
+    }
+    ctx.stroke();
+
+    // Crepitus markers
+    ctx.fillStyle = colors.amber;
+    events.forEach(function (e) {
+      var ex = X(e.t), ey = vl.y - 1;
+      ctx.beginPath(); ctx.moveTo(ex - 4, ey - 6); ctx.lineTo(ex + 4, ey - 6); ctx.lineTo(ex, ey + 1); ctx.closePath(); ctx.fill();
+    });
+
+    // Load response
+    var el = lanes[2];
+    ctx.strokeStyle = el.color; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (px = 0; px <= pw; px++) {
+      idx = Math.min(N - 1, Math.floor((px / pw) * N));
+      yy = el.y + el.h - ldr[idx] * el.h;
+      px ? ctx.lineTo(L + px, yy) : ctx.moveTo(L + px, yy);
+    }
+    ctx.stroke();
+
+    // Playhead
+    if (playhead >= 0) {
+      var phx = X(playhead);
+      ctx.fillStyle = colors.surface; ctx.globalAlpha = 0.55;
+      ctx.fillRect(phx, TOP - 6, L + pw - phx, ph + 6);
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = colors.amber; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(phx, 4); ctx.lineTo(phx, TOP + ph); ctx.stroke();
+    }
+  }
+
+  readColors(); draw();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  if ('ResizeObserver' in window) new ResizeObserver(draw).observe(box); else window.addEventListener('resize', draw);
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  var onTheme = function () { readColors(); draw(); };
+  mq.addEventListener ? mq.addEventListener('change', onTheme) : mq.addListener(onTheme);
+  new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // ---------- Sound: the joint-sound channel rendered as audio ----------
+  var btn = document.getElementById('play'), label = document.getElementById('playLabel'), icon = document.getElementById('playIcon');
+  var strip = document.getElementById('strip');
+  var actx = null, buffer = null, src = null, startAt = 0, raf = 0;
+
+  function buildBuffer() {
+    var sr = actx.sampleRate, len = Math.floor(T * sr);
+    var buf = actx.createBuffer(1, len, sr), d = buf.getChannelData(0);
+    var r2 = mulberry32(11), lp = 0;
+    for (var n = 0; n < len; n++) {
+      var e = env[Math.min(N - 1, Math.floor((n / sr) * RATE))];
+      var w = r2() * 2 - 1; lp += (w - lp) * 0.18;
+      d[n] = lp * e * 0.9;
+    }
+    events.forEach(function (ev) {
+      var clicks = 3 + Math.floor(r2() * 4);
+      for (var c = 0; c < clicks; c++) {
+        var t0 = ev.t + c * (0.004 + r2() * 0.006), f = 260 + r2() * 520, s0 = Math.floor(t0 * sr);
+        for (var k = 0; k < sr * 0.03 && s0 + k < len; k++) {
+          var tt = k / sr;
+          d[s0 + k] += ev.a * 0.75 * Math.exp(-tt / 0.005) * Math.sin(2 * Math.PI * f * tt);
+        }
+      }
+    });
+    return buf;
+  }
+
+  function setPlaying(on) {
+    strip.classList.toggle('playing', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    label.textContent = on ? 'Stop' : 'Hear the joint sound';
+    icon.setAttribute('d', on ? 'M2 2h8v8H2z' : 'M2 1l9 5-9 5z');
+  }
+
+  function tick() {
+    var t = actx.currentTime - startAt;
+    if (t >= T || !src) { stop(); return; }
+    playhead = t; draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function stop() {
+    if (src) { try { src.stop(); } catch (e) {} src = null; }
+    cancelAnimationFrame(raf); playhead = -1; draw(); setPlaying(false);
+  }
+
+  btn.addEventListener('click', function () {
+    if (src) { stop(); return; }
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!actx) actx = new AC();
+      if (actx.state === 'suspended') actx.resume();
+      if (!buffer) buffer = buildBuffer();
+    } catch (e) {
+      label.textContent = 'Audio is not available here'; btn.disabled = true; return;
+    }
+    src = actx.createBufferSource(); src.buffer = buffer;
+    var hp = actx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 30;
+    var lpf = actx.createBiquadFilter(); lpf.type = 'lowpass'; lpf.frequency.value = 1800;
+    var g = actx.createGain(); g.gain.value = 0.7;
+    src.connect(hp); hp.connect(lpf); lpf.connect(g); g.connect(actx.destination);
+    src.onended = function () { if (src) stop(); };
+    startAt = actx.currentTime + 0.05; src.start(startAt);
+    setPlaying(true); raf = requestAnimationFrame(tick);
+  });
+
+  // ---------- Copy email ----------
+  var copyBtn = document.getElementById('copy'), msg = document.getElementById('copyMsg'), email = document.getElementById('email');
+  copyBtn.addEventListener('click', function () {
+    var text = email.textContent;
+    function fallback() {
+      var range = document.createRange(); range.selectNodeContents(email);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      msg.textContent = 'Selected. Press Ctrl+C or ⌘C to copy.';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { msg.textContent = 'Copied.'; }, fallback);
+    } else { fallback(); }
+  });
+})();
+</script>
+
+</body>
+</html>
